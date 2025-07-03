@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entra ID Admin Role Finder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        body.light-theme {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(30, 30, 46, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        body.light-theme .container {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        body.light-theme .header {
+            background: linear-gradient(135deg, #0078d4, #106ebe);
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .search-section {
+            padding: 40px;
+            background: #1e1e2e;
+            color: #e4e4e7;
+            transition: all 0.3s ease;
+        }
+
+        body.light-theme .search-section {
+            background: white;
+            color: #333;
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 60px 15px 20px;
+            font-size: 1.1rem;
+            border: 2px solid #44475a;
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: #2d2d3f;
+            color: #e4e4e7;
+        }
+
+        body.light-theme .search-input {
+            border: 2px solid #e1e5e9;
+            background: white;
+            color: #333;
+        }
+
+        .search-input:focus {
+            border-color: #6c5ce7;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+
+        body.light-theme .search-input:focus {
+            border-color: #0078d4;
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: #9ca3af;
+        }
+
+        body.light-theme .search-input::placeholder {
+            color: #666;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        body.light-theme .search-btn {
+            background: #0078d4;
+        }
+
+        .search-btn:hover {
+            background: #5b4cdb;
+        }
+
+        body.light-theme .search-btn:hover {
+            background: #106ebe;
+        }
+
+        .search-btn:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+        }
+
+        body.light-theme .search-btn:disabled {
+            background: #ccc;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: #9ca3af;
+        }
+
+        body.light-theme .loading {
+            color: #666;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #44475a;
+            border-top: 4px solid #6c5ce7;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        body.light-theme .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0078d4;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            display: none;
+        }
+
+        .result-card {
+            background: #2d2d3f;
+            border: 1px solid #44475a;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        body.light-theme .result-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.2);
+        }
+
+        body.light-theme .result-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .task-query {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #e4e4e7;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #44475a;
+            padding-bottom: 10px;
+        }
+
+        body.light-theme .task-query {
+            color: #333;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .role-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981, #06d6a0);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+        }
+
+        body.light-theme .role-badge {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            box-shadow: 0 2px 10px rgba(40, 167, 69, 0.3);
+        }
+
+        .explanation {
+            color: #d1d5db;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        body.light-theme .explanation {
+            color: #495057;
+        }
+
+        .permissions {
+            background: #1f2937;
+            border-left: 4px solid #6c5ce7;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: #e4e4e7;
+        }
+
+        body.light-theme .permissions {
+            background: #e7f3ff;
+            border-left: 4px solid #0078d4;
+            color: #333;
+        }
+
+        .permissions-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #a78bfa;
+        }
+
+        body.light-theme .permissions-title {
+            color: #0078d4;
+        }
+
+        .error {
+            display: none;
+            background: #1f2937;
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        body.light-theme .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .popular-tasks {
+            background: #1e1e2e;
+            padding: 30px 40px;
+            border-top: 1px solid #44475a;
+        }
+
+        body.light-theme .popular-tasks {
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .popular-tasks h3 {
+            margin-bottom: 20px;
+            color: #e4e4e7;
+            font-size: 1.3rem;
+        }
+
+        body.light-theme .popular-tasks h3 {
+            color: #333;
+        }
+
+        .task-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .task-chip {
+            background: #2d2d3f;
+            border: 1px solid #44475a;
+            color: #e4e4e7;
+            padding: 10px 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        body.light-theme .task-chip {
+            background: white;
+            border: 1px solid #dee2e6;
+            color: #333;
+        }
+
+        .task-chip:hover {
+            background: #6c5ce7;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+        }
+
+        body.light-theme .task-chip:hover {
+            background: #0078d4;
+            box-shadow: 0 4px 15px rgba(0, 120, 212, 0.3);
+        }
+
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+
+        body.light-theme .ai-badge {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .search-section {
+                padding: 20px;
+            }
+            
+            .popular-tasks {
+                padding: 20px;
+            }
+
+            .search-input {
+                padding-right: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="theme-toggle" id="themeToggle">☀️ Light Mode</button>
+            <h1>🔐 Entra ID Admin Role Finder</h1>
+            <p>AI-powered least privilege role recommendations <span class="ai-badge">🤖 Claude AI</span></p>
+        </div>
+        
+        <div class="search-section">
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="Describe any Entra ID admin task... (e.g., I need to reset a user's password, create conditional access policy)">
+                <button class="search-btn" id="searchBtn">Search</button>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <p>Claude is analyzing your request...</p>
+            </div>
+            
+            <div class="error" id="error">
+                <strong>Error:</strong> <span id="errorMessage"></span>
+            </div>
+            
+            <div class="results" id="results"></div>
+        </div>
+        
+        <div class="popular-tasks">
+            <h3>Try These Common Tasks</h3>
+            <div class="task-chips">
+                <span class="task-chip" onclick="searchFor('I need to reset user passwords')">Reset Passwords</span>
+                <span class="task-chip" onclick="searchFor('Create new user accounts')">Create Users</span>
+                <span class="task-chip" onclick="searchFor('Manage group memberships')">Manage Groups</span>
+                <span class="task-chip" onclick="searchFor('Assign Office 365 licenses')">Assign Licenses</span>
+                <span class="task-chip" onclick="searchFor('Configure conditional access policies')">Conditional Access</span>
+                <span class="task-chip" onclick="searchFor('Register new applications')">App Registration</span>
+                <span class="task-chip" onclick="searchFor('Invite guest users')">Guest Users</span>
+                <span class="task-chip" onclick="searchFor('View audit logs and reports')">View Reports</span>
+                <span class="task-chip" onclick="searchFor('Manage device enrollment')">Device Management</span>
+                <span class="task-chip" onclick="searchFor('Configure MFA settings')">MFA Configuration</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const error = document.getElementById('error');
+        const errorMessage = document.getElementById('errorMessage');
+        const themeToggle = document.getElementById('themeToggle');
+
+        // Theme toggle functionality
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-theme');
+            const isLight = document.body.classList.contains('light-theme');
+            themeToggle.textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
+            
+            // Save theme preference
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        });
+
+        // Load saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-theme');
+            themeToggle.textContent = '🌙 Dark Mode';
+        }
+
+        async function searchTasks(query) {
+            if (!query.trim()) {
+                return;
+            }
+
+            // Show loading state
+            loading.style.display = 'block';
+            results.style.display = 'none';
+            error.style.display = 'none';
+            searchBtn.disabled = true;
+            searchBtn.textContent = 'Searching...';
+
+            try {
+                const prompt = `You are an expert in Microsoft Entra ID (Azure AD) administration and role-based access control. 
+
+User's request: "${query}"
+
+Please analyze this request and provide the LEAST PRIVILEGED admin role that can accomplish this task in Entra ID.
+
+CRITICAL: Your response must be ONLY a valid JSON object. DO NOT include markdown code blocks, backticks, or any other formatting. DO NOT start with \`\`\`json or end with \`\`\`.
+
+Respond with a JSON object in this exact format:
+
+{
+  "task": "Clear description of what the user wants to do",
+  "role": "Exact name of the least privileged Entra ID admin role",
+  "explanation": "Detailed explanation of why this is the minimum required role and what it can do",
+  "keyPermissions": "List the most important permissions this role provides for the task"
+}
+
+Important guidelines:
+- Always recommend the LEAST privileged role that can accomplish the task
+- Use exact official Entra ID role names (e.g., "Password Administrator", "User Administrator", "Groups Administrator")
+- If the task requires Global Administrator, explain why no lesser role will work
+- Consider built-in roles first, then custom roles if absolutely necessary
+- Be specific about what the role can and cannot do
+
+REMEMBER: Output ONLY the JSON object, nothing else. No backticks, no markdown, no explanatory text.`;
+
+                const response = await window.claude.complete(prompt);
+                
+                // Clean up the response in case it has markdown formatting
+                let cleanResponse = response.trim();
+                if (cleanResponse.startsWith('```json')) {
+                    cleanResponse = cleanResponse.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+                }
+                if (cleanResponse.startsWith('```')) {
+                    cleanResponse = cleanResponse.replace(/^```\s*/, '').replace(/\s*```$/, '');
+                }
+                
+                const result = JSON.parse(cleanResponse);
+
+                // Hide loading and show results
+                loading.style.display = 'none';
+                searchBtn.disabled = false;
+                searchBtn.textContent = 'Search';
+                
+                displayResult(result);
+
+            } catch (err) {
+                console.error('Error:', err);
+                loading.style.display = 'none';
+                searchBtn.disabled = false;
+                searchBtn.textContent = 'Search';
+                
+                error.style.display = 'block';
+                errorMessage.textContent = 'Failed to analyze the request. Please try again or rephrase your query.';
+            }
+        }
+
+        function displayResult(result) {
+            results.style.display = 'block';
+            results.innerHTML = `
+                <div class="result-card">
+                    <div class="task-query">📋 ${result.task}</div>
+                    <div class="role-badge">🎯 ${result.role}</div>
+                    <div class="explanation">${result.explanation}</div>
+                    <div class="permissions">
+                        <div class="permissions-title">🔑 Key Permissions:</div>
+                        ${result.keyPermissions}
+                    </div>
+                </div>
+            `;
+        }
+
+        function searchFor(query) {
+            searchInput.value = query;
+            searchTasks(query);
+        }
+
+        searchBtn.addEventListener('click', () => {
+            searchTasks(searchInput.value);
+        });
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !searchBtn.disabled) {
+                searchTasks(searchInput.value);
+            }
+        });
+
+        // Focus on input when page loads
+        searchInput.focus();
+    </script>
+</body>
+</html>
