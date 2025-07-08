@@ -24,15 +24,14 @@ A modern frontend application to find the least privileged Entra ID admin role f
 
 ```
 entraidrolefinder/
-├── public/                          # Static files served by web server
-│   ├── src/
-│   │   ├── components/
-│   │   │   └── App.js              # Main application component
-│   │   ├── styles/
-│   │   │   └── theme.css           # CSS styles and themes
-│   │   └── index.js                # Application entry point
-│   ├── entra-id-favicon-admin-*.svg # Theme-aware favicons
-│   └── index.html                  # Main HTML file
+├── src/
+│   ├── components/
+│   │   └── App.js                  # Main application component
+│   ├── styles/
+│   │   └── theme.css               # CSS styles and themes
+│   └── index.js                    # Application entry point
+├── entra-id-favicon-admin-*.svg     # Theme-aware favicons
+├── index.html                      # Main HTML file
 ├── package.json                    # Project metadata and scripts
 ├── .gitignore                      # Git ignore rules
 └── README.md                       # This file
@@ -55,7 +54,7 @@ entraidrolefinder/
 2. **Start the development server**
    ```bash
    # Using Python (recommended)
-   python -m http.server 8080 --directory public
+   python -m http.server 8080
    
    # Or using npm script
    npm run dev
@@ -143,13 +142,13 @@ Modify CSS variables in `public/src/styles/theme.css`:
 ### Netlify
 1. Connect your GitHub repository to Netlify
 2. Set build command: (leave empty for static sites)
-3. Set publish directory: `public`
+3. Set publish directory: `.` (root directory)
 4. Deploy!
 
 ### Vercel
 1. Import your GitHub repository to Vercel
 2. Set framework preset: "Other"
-3. Set output directory: `public`
+3. Set output directory: `.` (root directory)
 4. Deploy!
 
 ## 🤝 Contributing

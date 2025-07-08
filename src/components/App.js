@@ -25,7 +25,15 @@ class App {
 
     setTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
+        this.updateFavicon(theme);
         this.setState({ theme });
+    }
+
+    updateFavicon(theme) {
+        const faviconLink = document.querySelector('link[rel="icon"]');
+        if (faviconLink) {
+            faviconLink.href = theme === 'dark' ? 'entra-id-favicon-admin-dark.svg' : 'entra-id-favicon-admin-light.svg';
+        }
     }
 
     toggleTheme() {
@@ -94,6 +102,30 @@ class App {
                 name: 'Compliance Data Administrator',
                 description: 'Manage compliance settings in a limited capacity.',
                 permissions: ['ComplianceData.ReadWrite', 'Directory.ReadWrite.All']
+            },
+            {
+                id: 6,
+                name: 'Billing Administrator',
+                description: 'Administer billing and subscription settings.',
+                permissions: ['Billing.ReadWrite', 'Subscription.Read']
+            },
+            {
+                id: 7,
+                name: 'User Access Administrator',
+                description: 'Manage user access to applications and resources.',
+                permissions: ['RoleManagement.ReadWrite.Directory', 'User.Invite.All']
+            },
+            {
+                id: 8,
+                name: 'Device Administrator',
+                description: 'Manage devices and perform device configurations.',
+                permissions: ['Device.ReadWrite.All', 'Directory.ReadWrite.All']
+            },
+            {
+                id: 9,
+                name: 'Data Scientist',
+                description: 'Analyze and work with organizational data.',
+                permissions: ['Data.Read.All', 'Data.ScienceTools.ReadWrite']
             }
         ];
 
@@ -105,21 +137,23 @@ class App {
     }
 
     setupEventListeners() {
+        // Use event delegation with more specific handling
         document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('theme-toggle')) {
+            if (e.target.closest('.theme-toggle')) {
                 this.toggleTheme();
             }
         });
 
         document.addEventListener('submit', (e) => {
-            if (e.target.classList.contains('search-form')) {
+            if (e.target.closest('.search-form')) {
                 this.handleSearch(e);
             }
         });
 
         document.addEventListener('input', (e) => {
-            if (e.target.classList.contains('search-input')) {
-                this.setState({ searchQuery: e.target.value });
+            if (e.target.matches('.search-input')) {
+                // Update the state directly without re-rendering
+                this.state.searchQuery = e.target.value;
             }
         });
     }
@@ -127,18 +161,28 @@ class App {
     render() {
         const { theme, searchQuery, results, loading, error, hasSearched } = this.state;
         
+        // Store current focus element before re-render
+        const activeElement = document.activeElement;
+        const wasSearchInputFocused = activeElement && activeElement.classList.contains('search-input');
+        const cursorPosition = wasSearchInputFocused ? activeElement.selectionStart : null;
+        
         const app = `
             <div class="app-container">
                 <header class="header">
                     <div class="logo">
                         <div class="logo-icon">
-                            <i data-lucide="shield-check"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24">
+                                <!-- Search icon within shield - matches favicon -->
+                                <path d="M16 2 L26 6 L26 16 C26 22 21 28 16 30 C11 28 6 22 6 16 L6 6 Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+                                <circle cx="14" cy="14" r="4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="m17 17 3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
                         </div>
                         <span class="logo-text">Entra ID Role Finder</span>
                     </div>
                     <button class="theme-toggle">
                         <i data-lucide="${theme === 'dark' ? 'sun' : 'moon'}"></i>
-                        ${theme === 'dark' ? 'Light' : 'Dark'}
+                        <span>${theme === 'dark' ? 'Light' : 'Dark'}</span>
                     </button>
                 </header>
 
@@ -162,7 +206,7 @@ class App {
                                     value="${searchQuery}"
                                 >
                                 <button type="submit" class="search-button" ${loading ? 'disabled' : ''}>
-                                    ${loading ? '<i data-lucide="loader-2"></i> Searching...' : '<i data-lucide="search"></i> Find Role'}
+                                    ${loading ? '<i data-lucide="loader-2"></i> <span>Searching...</span>' : '<i data-lucide="search"></i> <span>Find Role</span>'}
                                 </button>
                             </div>
                         </form>
@@ -230,6 +274,17 @@ class App {
 
         document.getElementById('root').innerHTML = app;
         
+        // Restore focus and cursor position if search input was focused
+        if (wasSearchInputFocused) {
+            const searchInput = document.querySelector('.search-input');
+            if (searchInput) {
+                searchInput.focus();
+                if (cursorPosition !== null) {
+                    searchInput.setSelectionRange(cursorPosition, cursorPosition);
+                }
+            }
+        }
+        
         // Initialize Lucide icons after DOM update
         if (window.lucide) {
             lucide.createIcons();
@@ -239,5 +294,8 @@ class App {
 
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    new App();
+    // Prevent multiple initializations
+    if (!window.appInstance) {
+        window.appInstance = new App();
+    }
 });
