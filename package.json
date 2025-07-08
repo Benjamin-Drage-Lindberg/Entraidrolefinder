@@ -1,0 +1,19 @@
+{
+  "name": "entra-id-role-finder",
+  "version": "1.0.0",
+  "description": "A modern frontend application to find the least privileged Entra ID admin role for specific administrative tasks",
+  "main": "public/index.html",
+  "scripts": {
+    "start": "python -m http.server 8000 --directory public",
+    "dev": "python -m http.server 8080 --directory public"
+  },
+  "keywords": [
+    "entra-id",
+    "azure-ad",
+    "roles",
+    "permissions",
+    "search"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}

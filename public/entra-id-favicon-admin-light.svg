@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+    <!-- Search icon within shield - Light theme -->
+    <!-- Shield outline -->
+    <path d="M16 2 L26 6 L26 16 C26 22 21 28 16 30 C11 28 6 22 6 16 L6 6 Z" fill="none" stroke="#0078d4" stroke-width="2.5" stroke-linejoin="round"/>
+    <!-- Search icon -->
+    <circle cx="14" cy="14" r="4" fill="none" stroke="#0078d4" stroke-width="2" stroke-linecap="round"/>
+    <path d="m17 17 3 3" stroke="#0078d4" stroke-width="2" stroke-linecap="round"/>
+</svg>

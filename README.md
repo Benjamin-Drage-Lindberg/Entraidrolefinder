@@ -1,188 +1,182 @@
 # Entra ID Role Finder
 
-An AI-powered tool to help users discover and understand Microsoft Entra ID (formerly Azure AD) roles and permissions through intelligent search and recommendations.
+A modern frontend application to find the least privileged Entra ID admin role for specific administrative tasks. Built with vanilla JavaScript for simplicity and performance.
+
+## 🔍 Features
+
+- **🎯 Smart Search**: Find the least privileged role for any administrative task
+- **🎨 Modern UI**: Clean, responsive design with dark/light theme support
+- **⚡ Fast & Lightweight**: Pure JavaScript with no framework dependencies
+- **📱 Mobile Friendly**: Responsive design that works on all devices
+- **🛡️ Security Focused**: Emphasizes least privilege principle
+- **🔄 Theme-Aware**: Beautiful dark/light mode with matching favicons
 
 ## 🏗️ Tech Stack
 
-### Frontend
-- **Framework**: Next.js 14 with App Router
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Deployment**: Vercel
-
-### Backend & Automation
-- **Workflow Engine**: n8n (self-hosted or n8n Cloud)
-- **Database**: PostgreSQL (connected via n8n)
-- **AI Integration**: n8n AI nodes (OpenAI, Claude, etc.)
-- **Search**: n8n workflows with vector database integration
-- **API**: n8n webhook endpoints + REST API calls
-- **Caching**: Redis integration for frequent queries
-
-## 🔧 Architecture Overview
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Next.js App   │───▶│   n8n Webhook   │───▶│  AI Processing  │
-│   (Frontend)    │    │   (API Layer)   │    │   (OpenAI/      │
-└─────────────────┘    └─────────────────┘    │   Claude)       │
-                                              └─────────────────┘
-                                                       │
-                                                       ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│    Response     │◀───│   PostgreSQL    │◀───│ Database Query  │
-│   (JSON/UI)     │    │   (Role Data)   │    │   & Vector      │
-└─────────────────┘    └─────────────────┘    │   Search        │
-                                              └─────────────────┘
-```
-
-### Request Flow
-1. **User Search Request** → Frontend captures user query
-2. **n8n Webhook** → Receives and processes the request
-3. **AI Processing** → Analyzes query using OpenAI/Claude
-4. **Database Query** → Searches PostgreSQL + vector database
-5. **Response** → Returns structured role information
-
-## 🚀 Key n8n Workflows
-
-### 1. Search Handler Workflow
-**Purpose**: Main search functionality
-- **Trigger**: Webhook endpoint
-- **Process**: AI Agent → Database lookup → Response formatting
-- **Output**: Role recommendations with explanations
-
-### 2. Data Ingestion Workflow
-**Purpose**: Keep role mappings current
-- **Trigger**: Scheduled (daily/weekly)
-- **Process**: Fetch latest Entra ID documentation → Parse roles → Update database
-- **Output**: Updated role database
-
-### 3. AI Chain Workflow
-**Purpose**: Complex reasoning and multi-step queries
-- **Trigger**: Complex search requests
-- **Process**: Multiple AI nodes for context building and reasoning
-- **Output**: Detailed role analysis and recommendations
-
-### 4. Caching Workflow
-**Purpose**: Optimize performance for frequent queries
-- **Trigger**: All search requests
-- **Process**: Redis cache check → Serve cached or process new
-- **Output**: Faster response times
+- **Frontend**: Vanilla JavaScript (ES6+)
+- **Styling**: CSS3 with CSS Variables
+- **Icons**: Lucide Icons
+- **Fonts**: Inter (Google Fonts)
+- **Server**: Python HTTP Server (for development)
+- **Deployment**: Any static hosting (GitHub Pages, Netlify, Vercel)
 
 ## 📁 Project Structure
 
 ```
 entraidrolefinder/
-├── src/
-│   ├── app/                 # Next.js App Router pages
-│   ├── components/          # Reusable UI components
-│   ├── lib/                 # Utility functions and API calls
-│   ├── types/               # TypeScript type definitions
-│   └── styles/              # Global styles
-├── public/                  # Static assets
-├── n8n-workflows/           # n8n workflow exports
-├── docs/                    # Documentation
-└── README.md
+├── public/                          # Static files served by web server
+│   ├── src/
+│   │   ├── components/
+│   │   │   └── App.js              # Main application component
+│   │   ├── styles/
+│   │   │   └── theme.css           # CSS styles and themes
+│   │   └── index.js                # Application entry point
+│   ├── entra-id-favicon-admin-*.svg # Theme-aware favicons
+│   └── index.html                  # Main HTML file
+├── package.json                    # Project metadata and scripts
+├── .gitignore                      # Git ignore rules
+└── README.md                       # This file
 ```
-
-## 🛠️ Features
-
-### Core Functionality
-- **Intelligent Role Search**: Natural language queries to find appropriate Entra ID roles
-- **Permission Mapping**: Detailed breakdown of permissions for each role
-- **Role Recommendations**: AI-powered suggestions based on user requirements
-- **Comparison Tools**: Side-by-side role comparisons
-- **Search History**: Track and revisit previous searches
-
-### AI Capabilities
-- **Natural Language Processing**: Understand user intent and context
-- **Contextual Recommendations**: Suggest roles based on job functions, responsibilities
-- **Explanation Generation**: AI-generated explanations for why certain roles are recommended
-- **Query Expansion**: Enhance simple queries with related terms and concepts
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
-- n8n instance (self-hosted or cloud)
-- PostgreSQL database
-- Redis (for caching)
+- Python 3.6+ (for development server)
+- Modern web browser
 
-### Frontend Setup
-```bash
-# Install dependencies
-npm install
+### Installation & Running
 
-# Run development server
-npm run dev
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/entraidrolefinder.git
+   cd entraidrolefinder
+   ```
 
-# Build for production
-npm run build
+2. **Start the development server**
+   ```bash
+   # Using Python (recommended)
+   python -m http.server 8080 --directory public
+   
+   # Or using npm script
+   npm run dev
+   ```
+
+3. **Open in browser**
+   Navigate to `http://localhost:8080`
+
+### Available Scripts
+
+- `npm run start` - Start development server on port 8000
+- `npm run dev` - Start development server on port 8080
+
+## 🧪 Testing the Search
+
+Try these sample queries to test the search functionality:
+
+### Basic Searches
+- `user` - Find user-related roles
+- `password` - Find password reset capabilities
+- `billing` - Find billing administration roles
+- `security` - Find security-related roles
+- `device` - Find device management roles
+
+### Permission-Based Searches
+- `User.ReadWrite` - Find roles with user read/write permissions
+- `Directory.Read` - Find roles with directory read permissions
+- `Application.ReadWrite` - Find application management roles
+
+### Task-Based Searches
+- `reset password` - Find roles that can reset user passwords
+- `create group` - Find roles that can create security groups
+- `manage devices` - Find device administration roles
+
+## 🎨 Design Features
+
+### Visual Design
+- **Modern Search Interface**: Integrated search container with icon and button
+- **Theme Support**: Automatic dark/light mode switching
+- **Responsive Layout**: Mobile-first design approach
+- **Consistent Branding**: Matching favicon and header icons
+
+### User Experience
+- **Smart Input Handling**: No focus loss while typing
+- **Visual Feedback**: Loading states and error handling
+- **Accessibility**: Proper focus management and keyboard navigation
+- **Performance**: Lightweight and fast loading
+
+## 🔧 Customization
+
+### Adding New Roles
+Edit the `getMockResults()` method in `public/src/components/App.js` to add new roles:
+
+```javascript
+const mockRoles = [
+    {
+        id: 10,
+        name: 'Your Custom Role',
+        description: 'Description of what this role can do.',
+        permissions: ['Permission.Name', 'Another.Permission']
+    },
+    // ... existing roles
+];
 ```
 
-### n8n Configuration
-1. Import workflows from `n8n-workflows/` directory
-2. Configure database connection credentials
-3. Set up AI node API keys (OpenAI, Claude)
-4. Configure webhook endpoints
-5. Set up scheduled triggers for data ingestion
+### Theming
+Modify CSS variables in `public/src/styles/theme.css`:
 
-### Database Setup
-```sql
--- Create roles table
-CREATE TABLE entra_roles (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    permissions JSONB,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-);
-
--- Create search index
-CREATE INDEX idx_roles_search ON entra_roles USING gin(to_tsvector('english', name || ' ' || description));
+```css
+:root {
+    --primary-color: #your-color;
+    --surface-color: #your-surface;
+    /* ... other variables */
+}
 ```
 
-## 📊 API Endpoints
+## 🚀 Deployment
 
-### n8n Webhook Endpoints
-- `POST /webhook/search` - Main search functionality
-- `POST /webhook/compare` - Role comparison
-- `GET /webhook/roles` - List all roles
-- `POST /webhook/feedback` - User feedback collection
+### GitHub Pages
+1. Push your code to GitHub
+2. Go to repository Settings → Pages
+3. Select source branch (usually `main`)
+4. Your site will be available at `https://yourusername.github.io/entraidrolefinder`
 
-## 🎯 Deployment
+### Netlify
+1. Connect your GitHub repository to Netlify
+2. Set build command: (leave empty for static sites)
+3. Set publish directory: `public`
+4. Deploy!
 
-### Frontend (Vercel)
-```bash
-# Connect to Vercel
-vercel
-
-# Deploy
-vercel --prod
-```
-
-### Backend (n8n)
-- **n8n Cloud**: Import workflows and configure credentials
-- **Self-hosted**: Deploy n8n with Docker or traditional hosting
-
-## 📈 Monitoring & Analytics
-
-- **n8n Workflow Metrics**: Track execution times and success rates
-- **User Analytics**: Search patterns and popular queries
-- **AI Performance**: Response quality and accuracy metrics
-- **Database Performance**: Query optimization and caching effectiveness
+### Vercel
+1. Import your GitHub repository to Vercel
+2. Set framework preset: "Other"
+3. Set output directory: `public`
+4. Deploy!
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [Lucide Icons](https://lucide.dev/) for the beautiful icons
+- [Inter Font](https://rsms.me/inter/) for the clean typography
+- Microsoft for Entra ID documentation and role definitions
 
 ## 📞 Support
 
-For questions about setup or usage, please open an issue in the GitHub repository.
+If you encounter any issues or have questions:
+1. Check the [Issues](https://github.com/yourusername/entraidrolefinder/issues) page
+2. Create a new issue if your problem isn't already reported
+3. Provide as much detail as possible about your environment and the issue
+
+---
+
+**Made with ❤️ for the security community**
